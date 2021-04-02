@@ -39,12 +39,22 @@ def upload_files():
         flash('File Uploaded!', 'info')
     return render_template('new_index.html', headers=session['columns'])
 
-@app.route('/categories')
+@app.route('/categories', methods=['POST'])
 def categorize():
+    categories = {i:[] for i in ['categorical', 'ordinal', 'PII']}
     for col in session['columns']:
         option = request.form[col]
         print(option)
-    return redirect('upload_files')
+        if option == "1":
+            categories['categorical'].append(col)
+        elif option == "2":
+            categories['ordinal'].append(col)
+        elif option == "3":
+            categories['PII'].append(col)
+
+    print(categories)
+    flash('Categories assigned', 'info')
+    return redirect(url_for('upload_files'))
 
 @app.route('/predict',methods=['POST'])
 def predict():
@@ -54,7 +64,6 @@ def predict():
     new_data = model.sample(5)
     new_data.to_csv('new_data.csv')
     flash('Dataset Generation Complete!', 'info')
-    # return render_template('index.html',  tables=[new_data.to_html(classes='data', header="true")])
     return render_template('index.html')
 
 # Download API

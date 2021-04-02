@@ -1,16 +1,17 @@
 {% extends "index.html" %}
 {% block title %}Categorize Fields{% endblock %}
 {% block content %}
-<p>1 - continuous, 2- ,3- PII</p>
+<h3>1 - categorical | 2 - ordinal | 3 - PII</h3>
 <form action="{{url_for('categorize')}}" method = "post">
     {% for col in headers %}
     <div id=col>
         <p>{{col}}
-        <input type="radio" name=col id="1" value="1"> 
-        <input type="radio" name=col id="2" value="2"> 
-        <input type="radio" name=col id="3" value="3"> <br>
+        <input type="radio" name={{col}} id="1" value="1" required="required"> 
+        <input type="radio" name={{col}} id="2" value="2"> 
+        <input type="radio" name={{col}} id="3" value="3"> <br>
         </p>
     </div>
     {% endfor %}
+    <input type="submit" value="Submit">
 </form>
 {% endblock %}

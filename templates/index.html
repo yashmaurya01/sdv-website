@@ -7,12 +7,15 @@
 	<link href='https://fonts.googleapis.com/css?family=Arimo' rel='stylesheet' type='text/css'>
 	<link href='https://fonts.googleapis.com/css?family=Hind:300' rel='stylesheet' type='text/css'>
 	<link href='https://fonts.googleapis.com/css?family=Open+Sans+Condensed:300' rel='stylesheet' type='text/css'>
-	<!-- <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"> -->
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 
 <body>
 	<div class="login">
 		<h1>Synthetic Data Generator</h1>
+
+		<br>
+		<br>
 
 		<form action="#" method='post' enctype="multipart/form-data">
 			<input type=file name=file>
@@ -21,12 +24,15 @@
 
 		{% block content %}
 		{% endblock %}
+		<br>
+		<br>
 
 		<!-- Main Input For Receiving Query to our ML -->
 		<form action="{{ url_for('predict')}}" method="post">	
-			<button type="submit" class="btn btn-primary btn-block btn-large">Generate Dataset</button>
+			<button type="submit" class="btn btn-primary btn-large">Generate Dataset</button>
 			<br>
-			<a href="{{ url_for('download_file') }}">Download Dataset</a>
+			<br>
+			<h2><a href="{{ url_for('download_file') }}">Download Dataset</a></h2>
 		</form>
 
 		<br>
@@ -35,7 +41,7 @@
 		{% with messages = get_flashed_messages()%}
 			{% if messages %}
 				{% for msg in messages %}
-					<p>{{msg}}</p>
+					<h2>{{msg}}</h2>
 				{% endfor %}
 			{% endif %}
 		{% endwith %}
