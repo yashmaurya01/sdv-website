@@ -12,7 +12,7 @@ warnings.filterwarnings("ignore")
 #app = Flask(__name__)
 app = Flask(__name__)
 app.config['UPLOAD_PATH'] = 'uploads'
-app.config['UPLOAD_EXTENSIONS'] = ['.txt', '.csv']
+app.config['UPLOAD_EXTENSIONS'] = ['.txt', '.csv', '.data', '.names']
 app.secret_key = 'abc123'
 
 cur_dir = os.getcwd()
@@ -32,8 +32,19 @@ def upload_files():
             abort(400)
         uploaded_file.save(os.path.join(app.config['UPLOAD_PATH'], filename))
         session['file'] = filename
+        headers = pd.read_csv(os.path.join(app.config['UPLOAD_PATH'],filename)).columns
+        headers = list(headers)
+        print(headers)
+        session['columns'] = headers
         flash('File Uploaded!', 'info')
-    return redirect(url_for('home'))
+    return render_template('new_index.html', headers=session['columns'])
+
+@app.route('/categories')
+def categorize():
+    for col in session['columns']:
+        option = request.form[col]
+        print(option)
+    return redirect('upload_files')
 
 @app.route('/predict',methods=['POST'])
 def predict():
@@ -51,7 +62,7 @@ def predict():
 def download_file():
     output = 'new_data.csv'
     file_path = os.path.join(cur_dir,output)
-    flash('Dataset Downloading!', 'info')
+    flash('Dataset Downloading...', 'info')
     return send_file(file_path, as_attachment=True)
 
 if __name__ == "__main__":
