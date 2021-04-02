@@ -1,7 +1,7 @@
 {% extends "index.html" %}
 {% block title %}Categorize Fields{% endblock %}
 {% block content %}
-<h3>1 - categorical | 2 - ordinal | 3 - PII</h3>
+<h3>1 - Categorical | 2 - Ordinal | 3 - PII(Personally Identifiable Information)</h3>
 <form action="{{url_for('categorize')}}" method = "post">
     {% for col in headers %}
     <div id=col>
