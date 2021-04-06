@@ -22,8 +22,38 @@
 			<input type=submit value=Upload>
 		</form>
 
-		{% block content %}
-		{% endblock %}
+		{% if preview %}
+
+		<h2>Dataset Preview</h2>
+		<center>
+		<div class="table">
+
+			{{ data|safe }}
+
+		</div>
+		</center>
+
+		{% endif %}
+
+		{% if categorize %}
+
+
+		<h3>1 - Categorical | 2 - Ordinal | 3 - PII(Personally Identifiable Information)</h3>
+		<form action="{{url_for('categorize')}}" method = "post">
+			{% for col in headers %}
+			<div id=col>
+				<p>{{col}}
+				<input type="radio" name={{col}} id="1" value="1" required="required"> 
+				<input type="radio" name={{col}} id="2" value="2"> 
+				<input type="radio" name={{col}} id="3" value="3"> <br>
+				</p>
+			</div>
+			{% endfor %}
+			<input type="submit" value="Submit">
+		</form>
+
+		{% endif %}
+
 		<br>
 		<br>
 
@@ -32,6 +62,20 @@
 			<button type="submit" class="btn btn-primary btn-large">Generate Dataset</button>
 			<br>
 			<br>
+			{% if generated %}
+
+			<h2>Generated Dataset Preview</h2>
+			<center>
+			<div class="table">
+
+				{{ gendata|safe }}
+
+			</div>
+			</center>
+			{% endif %}
+			<br>
+			<br>
+
 			<h2><a href="{{ url_for('download_file') }}">Download Dataset</a></h2>
 		</form>
 
@@ -45,9 +89,7 @@
 				{% endfor %}
 			{% endif %}
 		{% endwith %}
-		<!-- {% for table in tables %}
-				{{ table|safe }}
-		{% endfor %} -->
+
 	</div>
 </body>
 

@@ -32,12 +32,19 @@ def upload_files():
             abort(400)
         uploaded_file.save(os.path.join(app.config['UPLOAD_PATH'], filename))
         session['file'] = filename
-        headers = pd.read_csv(os.path.join(app.config['UPLOAD_PATH'],filename)).columns
-        headers = list(headers)
-        print(headers)
+        df = pd.read_csv(os.path.join(app.config['UPLOAD_PATH'],filename))
+        headers = list(df.columns)
         session['columns'] = headers
+        df = df.head(5)
+        dataset = df.to_html()
+        session['dataset'] = dataset
         flash('File Uploaded!', 'info')
-    return render_template('new_index.html', headers=session['columns'])
+        
+        return render_template('index.html', headers=session['columns'], data = dataset, preview = True, categorize=True)
+    
+    else:
+        flash('No file specified', 'error')
+        return redirect(url_for('upload_files'))
 
 @app.route('/categories', methods=['POST'])
 def categorize():
@@ -64,7 +71,7 @@ def predict():
     new_data = model.sample(5)
     new_data.to_csv('new_data.csv')
     flash('Dataset Generation Complete!', 'info')
-    return render_template('index.html')
+    return render_template('index.html', data = session['dataset'], gendata=new_data.to_html(), generated=True, preview=True)
 
 # Download API
 @app.route("/download", methods = ['GET'])

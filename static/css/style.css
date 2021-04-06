@@ -30,6 +30,18 @@ body {
 	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#3E1D6D', endColorstr='#092756',GradientType=1 );
 
 }
+
+.table {       
+	position: absolute;
+	font-size: 150%;
+	width: 480px;
+	height: 200px;
+	z-index: 15;
+	top: 20%;
+	left: 50%;
+	margin: -100px 0 0 -150px;
+	background: rgb(236, 240, 204);
+	}
 /* .login { 
 	position: absolute;
 	top: 40%;
