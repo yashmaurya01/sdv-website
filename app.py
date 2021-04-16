@@ -5,13 +5,17 @@ import numpy as np
 import pandas as pd
 from sdv.demo import load_tabular_demo
 from sdv.tabular import CTGAN
+from parse import parse, split
+from generate import sample
+import string
+import random
 
 import warnings
 warnings.filterwarnings("ignore")
 
 #app = Flask(__name__)
 app = Flask(__name__)
-app.config['UPLOAD_PATH'] = 'uploads'
+app.config['UPLOAD_PATH'] = 'datasets'
 app.config['UPLOAD_EXTENSIONS'] = ['.txt', '.csv', '.data', '.names']
 app.secret_key = 'abc123'
 
@@ -27,19 +31,45 @@ def upload_files():
     uploaded_file = request.files['file']
     filename = secure_filename(uploaded_file.filename)
     if filename != '':
-        file_ext = os.path.splitext(filename)[1]
+        input_file, file_ext = os.path.splitext(filename)
+
+        #Generating random alphanumeric string to avoid repetition of folder names
+        letters = string.ascii_uppercase + string.digits
+        folder = ''.join(random.choice(letters) for i in range(10))
+        print(folder)
+
+        path = os.path.join(app.config['UPLOAD_PATH'],folder)
+        
         if file_ext not in app.config['UPLOAD_EXTENSIONS']:
-            abort(400)
-        uploaded_file.save(os.path.join(app.config['UPLOAD_PATH'], filename))
+            flash('Unsupported file type', 'error')
+            return redirect(url_for('home'))
+
+        try:
+            os.mkdir(path)
+        except OSError as error:
+            flash(error, 'error')
+            print(error)
+            return redirect(url_for('home'))
+ 
+        uploaded_file.save(os.path.join(path, filename))
         session['file'] = filename
-        df = pd.read_csv(os.path.join(app.config['UPLOAD_PATH'],filename))
+        df = pd.read_csv(os.path.join(path,filename))
         headers = list(df.columns)
         session['columns'] = headers
         df = df.head(5)
         dataset = df.to_html()
         session['dataset'] = dataset
+
         flash('File Uploaded!', 'info')
-        
+
+        output_file = input_file + '_parsed'
+        ### FIX THIS
+        target = 'Hazard' ### FIX THIS
+        ### FIX THIS
+
+        parse.parse_csv(path, input_file, output_file, target)
+        split.split_csv(path, output_file)
+
         return render_template('index.html', headers=session['columns'], data = dataset, preview = True, categorize=True)
     
     else:
@@ -70,6 +100,10 @@ def predict():
     model.fit(data)
     new_data = model.sample(5)
     new_data.to_csv('new_data.csv')
+
+    # sample.sample_tablegan("Hazards", "LibertyMutualHazard", "./datasets", output=f"datasets/Hazards/LibertyMutualHazard_train_output{i}.csv", sample_synthetic_rows=41600, preprocess_table=preprocess_hazards)
+
+
     flash('Dataset Generation Complete!', 'info')
     return render_template('index.html', data = session['dataset'], gendata=new_data.to_html(), generated=True, preview=True)
 
