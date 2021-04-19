@@ -61,14 +61,10 @@ def upload_files():
         session['dataset'] = dataset
 
         flash('File Uploaded!', 'info')
-
-        output_file = input_file + '_parsed'
-        ### FIX THIS
-        target = 'Hazard' ### FIX THIS
-        ### FIX THIS
-
-        parse.parse_csv(path, input_file, output_file, target)
-        split.split_csv(path, output_file)
+        
+        session['path'] = path
+        session['input_file'] = input_file
+        session['output_file'] = input_file + '_parsed'
 
         return render_template('index.html', headers=session['columns'], data = dataset, preview = True, categorize=True)
     
@@ -78,19 +74,17 @@ def upload_files():
 
 @app.route('/categories', methods=['POST'])
 def categorize():
-    categories = {i:[] for i in ['categorical', 'ordinal', 'PII']}
-    for col in session['columns']:
-        option = request.form[col]
-        print(option)
-        if option == "1":
-            categories['categorical'].append(col)
-        elif option == "2":
-            categories['ordinal'].append(col)
-        elif option == "3":
-            categories['PII'].append(col)
 
-    print(categories)
-    flash('Categories assigned', 'info')
+    target = request.form['target']
+        
+    print(target)
+
+    session['target'] = target
+
+    parse.parse_csv(session['path'], session['input_file'], session['output_file'], session['target'])
+    split.split_csv(session['path'], session['input_file'])
+
+    flash('Target Column assigned', 'info')
     return redirect(url_for('upload_files'))
 
 @app.route('/predict',methods=['POST'])
@@ -100,6 +94,11 @@ def predict():
     model.fit(data)
     new_data = model.sample(5)
     new_data.to_csv('new_data.csv')
+
+    for i in range(1, 5):
+        os.system(f"rm datasets/Hazards/LibertyMutualHazard.csv")
+        os.system(f"cp datasets/Hazards/LibertyMutualHazard_train{i}.csv datasets/Hazards/LibertyMutualHazard.csv")
+        sample.sample_tablegan("Hazards", "LibertyMutualHazard", "./datasets", output=f"datasets/Hazards/LibertyMutualHazard_train_output{i}.csv", sample_synthetic_rows=41600, preprocess_table=preprocess_hazards)
 
     # sample.sample_tablegan("Hazards", "LibertyMutualHazard", "./datasets", output=f"datasets/Hazards/LibertyMutualHazard_train_output{i}.csv", sample_synthetic_rows=41600, preprocess_table=preprocess_hazards)
 
