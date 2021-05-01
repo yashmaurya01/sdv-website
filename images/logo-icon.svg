@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="60" height="60" viewBox="0 0 60 60">
+  <defs>
+    <clipPath id="clip-logo-icon">
+      <rect width="60" height="60"/>
+    </clipPath>
+  </defs>
+  <g id="logo-icon" clip-path="url(#clip-logo-icon)">
+    <g id="Group_158" data-name="Group 158" transform="translate(-8.5 -8.5)">
+      <path id="Exclusion_3" data-name="Exclusion 3" d="M50.5,60H9.5A9.511,9.511,0,0,1,0,50.5V9.5A9.511,9.511,0,0,1,9.5,0h41A9.511,9.511,0,0,1,60,9.5v41A9.511,9.511,0,0,1,50.5,60ZM16.807,13.7V44.5h12.32c8.528,0,14.96-6.621,14.96-15.4s-6.431-15.4-14.96-15.4Zm12.32,24.024H23.847V20.476h5.279a7.966,7.966,0,0,1,5.907,2.332A8.84,8.84,0,0,1,37.311,29.1a8.84,8.84,0,0,1-2.277,6.292A7.966,7.966,0,0,1,29.127,37.723Z" transform="translate(8.5 8.5)" fill="#fb7784" stroke="#fb7784" stroke-width="1"/>
+    </g>
+  </g>
+</svg>

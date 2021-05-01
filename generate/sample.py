@@ -44,6 +44,7 @@ def sample_tablegan(dataset_name, table_name, dataset_root_folder, output=None, 
     if output is None:
         output = dataset_name + "_synthetic.csv"
     vv.to_csv(output)
+    return vv
 
 
 def sample_ctgan(dataset_name, table_name, dataset_root_folder, output=None, sample_synthetic_rows=10000, preprocess_table=lambda x: x):
@@ -67,3 +68,4 @@ def sample_ctgan(dataset_name, table_name, dataset_root_folder, output=None, sam
     if output is None:
         output = dataset_name + "_synthetic.csv"
     vv.to_csv(output)
+    return vv

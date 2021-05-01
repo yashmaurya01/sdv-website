@@ -9,18 +9,18 @@ from parse import parse, split
 from generate import sample
 import string
 import random
+# from flask_ngrok import run_with_ngrok
+
 
 import warnings
 warnings.filterwarnings("ignore")
 
-#app = Flask(__name__)
 app = Flask(__name__)
 app.config['UPLOAD_PATH'] = 'datasets'
 app.config['UPLOAD_EXTENSIONS'] = ['.txt', '.csv', '.data', '.names']
 app.secret_key = 'abc123'
 
 cur_dir = os.getcwd()
-
 
 @app.route('/')
 def home():
@@ -37,6 +37,7 @@ def upload_files():
         letters = string.ascii_uppercase + string.digits
         folder = ''.join(random.choice(letters) for i in range(10))
         print(folder)
+        session['folder'] = folder
 
         path = os.path.join(app.config['UPLOAD_PATH'],folder)
         
@@ -89,22 +90,19 @@ def categorize():
 
 @app.route('/predict',methods=['POST'])
 def predict():
-    data = load_tabular_demo('student_placements')
-    model = CTGAN()
-    model.fit(data)
-    new_data = model.sample(5)
-    new_data.to_csv('new_data.csv')
+
+    syn_data_files = []
 
     for i in range(1, 5):
-        os.system(f"rm datasets/Hazards/LibertyMutualHazard.csv")
-        os.system(f"cp datasets/Hazards/LibertyMutualHazard_train{i}.csv datasets/Hazards/LibertyMutualHazard.csv")
-        sample.sample_tablegan("Hazards", "LibertyMutualHazard", "./datasets", output=f"datasets/Hazards/LibertyMutualHazard_train_output{i}.csv", sample_synthetic_rows=41600, preprocess_table=preprocess_hazards)
+        syn_data = sample.sample_tablegan(session['folder'], session['input_file']+'_parsed', "./datasets", sample_synthetic_rows=1000)
+        syn_data_files.append(syn_data)
 
-    # sample.sample_tablegan("Hazards", "LibertyMutualHazard", "./datasets", output=f"datasets/Hazards/LibertyMutualHazard_train_output{i}.csv", sample_synthetic_rows=41600, preprocess_table=preprocess_hazards)
-
-
+    new_data = pd.concat(syn_data_files)
+    new_data.to_csv('new_data.csv')
+    new_data = new_data.head(10)
     flash('Dataset Generation Complete!', 'info')
     return render_template('index.html', data = session['dataset'], gendata=new_data.to_html(), generated=True, preview=True)
+
 
 # Download API
 @app.route("/download", methods = ['GET'])
@@ -114,8 +112,6 @@ def download_file():
     flash('Dataset Downloading...', 'info')
     return send_file(file_path, as_attachment=True)
 
+
 if __name__ == "__main__":
     app.run(debug=True)
-
-
-
